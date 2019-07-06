@@ -65,7 +65,6 @@ for line in comparison:
         #s = ("fg:#ffffff", "<")
         s = "?\n"
         # a.append(("bg:#ff0000 class:color-column:#ff0000", line))
-        line = line[2:]
         a.append(line)
 
         c.append(s)
@@ -75,13 +74,11 @@ for line in comparison:
 
             # s = ("fg:#ffffff", ">")
 
-            line = line[2:]
             b.append(line)
             c.append(s)
         else:
             if not line.startswith("?"):
 
-                line = line[2:]
                 # a.append(("", line))
                 a.append(line)
                 b.append(line)
@@ -114,7 +111,7 @@ def debug(line):
 
 def replace_line(line):
     buffer3.delete(len(buffer3.document.current_line)+1)
-    buffer3.insert_text(line + "\n", move_cursor=False, fire_event=False)
+    buffer3.insert_text(line[2:] + "\n", move_cursor=False, fire_event=False)
     #new_text = str(line) + "\n" + buffer3.document.text
     #buffer3.set_document(Document(new_text, 0), True)
 
