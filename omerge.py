@@ -3,7 +3,7 @@ from prompt_toolkit import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.layout.containers import VSplit, HSplit, Window
 from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
-from prompt_toolkit.layout import Layout, BufferControl, FormattedTextControl, UIContent
+from prompt_toolkit.layout import Layout, BufferControl, FormattedTextControl, UIContent, Dimension
 from prompt_toolkit.layout.processors import AfterInput
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.formatted_text import FormattedText
@@ -142,9 +142,10 @@ buffer3 = Buffer(document=Document(data3, 0))  # Editable buffer.
 wspliter = Window(content=spliter, width=1, style="bg:#333333 ", cursorline=True)
 
 style = Style.from_dict({"cursor-line": "bg:#AAAAAA"})
-w1 = Window(content=buffercontrol1, ignore_content_height=True, cursorline=True, cursorcolumn=True)
-w2 = Window(content=BufferControl(buffer=buffer2), ignore_content_height=True, cursorline=True)
-w3 = Window(content=BufferControl(buffer=buffer3), ignore_content_height=True, cursorline=True)
+w1 = Window(content=buffercontrol1, ignore_content_height=True, cursorline=True, cursorcolumn=True, dont_extend_height=True)
+w2 = Window(content=BufferControl(buffer=buffer2), ignore_content_height=True, cursorline=True, dont_extend_height=True)
+w3 = Window(content=BufferControl(buffer=buffer3), ignore_content_height=True, cursorline=True, dont_extend_height=True,
+            height=Dimension(weight=1))
 #w2 = Window(content=FormattedTextControl(text='Helloo world'))
 
 @kb.add('c-q')
@@ -261,7 +262,7 @@ root_container = HSplit([
          Window(content=FormattedTextControl(text='REMOTE' + remote), height=1, char=' ', style="bg:#555555"),
          w2,
         ]),
-    ]),
+    ], height=Dimension(weight=1)),
 
     # A vertical line in the middle. We explicitly specify the width, to
     # make sure that the layout engine will not try to divide the whole
