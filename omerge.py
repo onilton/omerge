@@ -28,12 +28,14 @@ with open(args.local, 'r') as file1:
 with open(args.remote, 'r') as file2:
     data2 = file2.read()
 
-with open('something.py', 'r') as file3:
-    data3 = file3.read()
+with open(args.merged, 'r') as file3:
+    merged = file3.read()
 
 with open(args.base, 'r') as base:
     base = base.read()
     data3 = base
+
+remote = next(line for line in merged.splitlines() if line.startswith(">>>>>>>"))
 
 #class Custom
 
