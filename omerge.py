@@ -65,6 +65,7 @@ for line in comparison:
         #s = ("fg:#ffffff", "<")
         s = "?\n"
         # a.append(("bg:#ff0000 class:color-column:#ff0000", line))
+        line = line[2:]
         a.append(line)
 
         c.append(s)
@@ -73,10 +74,14 @@ for line in comparison:
             s = "?\n"
 
             # s = ("fg:#ffffff", ">")
+
+            line = line[2:]
             b.append(line)
             c.append(s)
         else:
             if not line.startswith("?"):
+
+                line = line[2:]
                 # a.append(("", line))
                 a.append(line)
                 b.append(line)
