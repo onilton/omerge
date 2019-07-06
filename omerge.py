@@ -11,6 +11,7 @@ from prompt_toolkit.document import Document
 from prompt_toolkit.styles import Style
 from difflib import Differ
 import argparse
+import subprocess
 
 kb = KeyBindings()
 splitkb = KeyBindings()
@@ -36,6 +37,14 @@ with open(args.base, 'r') as base:
     data3 = base
 
 remote = next(line for line in merged.splitlines() if line.startswith(">>>>>>>"))
+local = next(line for line in merged.splitlines() if line.startswith("<<<<<<<"))
+if 'HEAD' in local:
+    result = subprocess.run(['git', 'branch', '--no-color'], stdout=subprocess.PIPE)
+    branches = result.stdout.decode("utf-8").splitlines()
+    print(branches)
+    head_branch = next(line for line in branches if line.startswith("* "))
+    head_branch = head_branch[2:]
+    local = head_branch
 
 #class Custom
 
@@ -236,7 +245,7 @@ root_container = HSplit([
 
     VSplit([
         HSplit([
-             Window(content=FormattedTextControl(text='LOCAL'), height=1, char=' ', style="bg:#555555"),
+             Window(content=FormattedTextControl(text='LOCAL - ' + local), height=1, char=' ', style="bg:#555555"),
              w1,
         ]),
 
