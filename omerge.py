@@ -233,11 +233,21 @@ root_container = HSplit([
     # the left.
 
     VSplit([
-        w1,
-        #Window(width=1, char=' ', style="bg:#00ff00"),
-        wspliter,
+        HSplit([
+             Window(content=FormattedTextControl(text='LOCAL'), height=1, char=' ', style="bg:#555555"),
+             w1,
+        ]),
 
-        w2,
+        HSplit([
+            Window(height=1, char=' ', style="bg:#555555"),
+            wspliter,
+        ]),
+
+
+        HSplit([
+         Window(content=FormattedTextControl(text='REMOTE' + remote), height=1, char=' ', style="bg:#555555"),
+         w2,
+        ]),
     ]),
 
     # A vertical line in the middle. We explicitly specify the width, to
