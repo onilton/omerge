@@ -58,7 +58,7 @@ object BaseHtmlElements {
       }
 
       val changeHandler = (e: dom.Event) => {
-        println("x state")
+        println("x state:")
         println(state)
         setState(state.copy(checked = !state.checked))
       }
@@ -97,9 +97,9 @@ object BaseHtmlElements {
       }
 
       val changeHandler = (e: dom.Event) => {
-        println("state")
+        println("state:")
         println(state)
-        println("props")
+        println("props:")
         println(props)
 
     //    println(props)
