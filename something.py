@@ -6,3 +6,4 @@ for i in range(10):
 
 a = 0
 a = a -1
+c = 4
