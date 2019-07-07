@@ -133,6 +133,32 @@ for line in comparisonB:
                 # c.append(s)
     i += 1
 
+conflict_file = []
+add_prefix = False
+for line in merged.splitlines(keepends=True):
+    if line.startswith("<<<<<<<"):
+        add_prefix = True
+        conflict_file.append(line)
+    elif line.startswith(">>>>>>>"):
+        add_prefix = False
+        conflict_file.append(line)
+    elif line.startswith("======="):
+        conflict_file.append(line)
+    else:
+        if add_prefix:
+            conflict_file.append("?<<<<<<?" + line)
+        else:
+            conflict_file.append(line)
+    #print(conflict_file[-1:][0])
+
+comparison_conflicts = list(d.compare(conflict_file, base.splitlines(keepends=True)))
+
+output = ""
+for line in comparison_conflicts:
+    print(line[:-1])
+    if not (line.startswith("-") or line.startswith("?")):
+        output = output + line
+
 
 buffer1 = Buffer(document=Document("".join(a), 0), read_only=True)  # Editable buffer.
 buffercontrol1 = BufferControl(buffer=buffer1)  # Editable buffer.
@@ -185,7 +211,7 @@ def cursor_changed(x):
 sbuffer = Buffer(document=Document("".join(c), 0), read_only=True, on_cursor_position_changed=cursor_changed)  # Editable buffer.
 spliter = BufferControl(buffer=sbuffer, key_bindings=splitkb)  # Editable buffer.
 
-buffer3 = Buffer(document=Document(data3, 0))  # Editable buffer.
+buffer3 = Buffer(document=Document(output, 0))  # Editable buffer.
 
 
 wspliter = Window(content=spliter, width=1, style="bg:#333333 ", cursorline=True)
