@@ -163,7 +163,7 @@ def change_char(s, p, r):
     return s[:p]+r+s[p+1:]
 
 
-@splitkb.add('down')
+#@splitkb.add('down')
 def down_(event):
     """
     Pressing Ctrl-Q will exit the user interface.
