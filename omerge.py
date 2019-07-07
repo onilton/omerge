@@ -216,7 +216,7 @@ buffer3 = Buffer(document=Document(output, 0))  # Editable buffer.
 wspliter = Window(content=spliter, width=3, style="bg:#333333 ", cursorline=True)
 
 style = Style.from_dict({"cursor-line": "bg:#AAAAAA"})
-w1 = Window(content=buffercontrol1, ignore_content_height=True, cursorline=True, cursorcolumn=True, dont_extend_height=True)
+w1 = Window(content=buffercontrol1, ignore_content_height=True, cursorline=True, dont_extend_height=True)
 w2 = Window(content=BufferControl(buffer=buffer2), ignore_content_height=True, cursorline=True, dont_extend_height=True)
 w3 = Window(content=BufferControl(buffer=buffer3), ignore_content_height=True, cursorline=True, dont_extend_height=True,
             height=Dimension(weight=1))
