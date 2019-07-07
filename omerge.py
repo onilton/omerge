@@ -65,17 +65,17 @@ previous_removes = []
 previous_adds = []
 for line in comparisonA:
     # s = ("", " ")
-    s = " \n"
+    s = "   \n"
     if line.startswith("-"):
         previous = '-'
         previous_removes.append(line)
-        s = "?\n"
+        s = " ? \n"
         c.append(s)
     else:
         if line.startswith("+"):
             previous = '+'
             previous_adds.append(line)
-            s = "?\n"
+            s = " ? \n"
             c.append(s)
         else:
             if not line.startswith("?"):
@@ -100,18 +100,18 @@ previous = ''
 previous_removes = []
 previous_adds = []
 for line in comparisonB:
-    s = " \n"
+    s = "   \n"
     if line.startswith("-"):
         previous = '-'
         previous_removes.append(line)
-        s = "?\n"
+        s = " ? \n"
         # b.append(line)
         c[i] = s
     else:
         if line.startswith("+"):
             previous = '+'
             previous_adds.append(line)
-            s = "?\n"
+            s = " ? \n"
             # b.append(line)
             c[i] = s
         else:
@@ -186,9 +186,8 @@ def debug(line):
 
 def replace_line(line):
     buffer3.delete(len(buffer3.document.current_line)+1)
-    buffer3.insert_text(line[2:] + "\n", move_cursor=False, fire_event=False)
-    #new_text = str(line) + "\n" + buffer3.document.text
-    #buffer3.set_document(Document(new_text, 0), True)
+    buffer3.insert_text(line + "\n", move_cursor=False, fire_event=False)
+    #buffer3.insert_text(line[2:] + "\n", move_cursor=False, fire_event=False)
 
 
 #def change_on_cursor(source_buffer, target_buffer):
@@ -214,7 +213,7 @@ spliter = BufferControl(buffer=sbuffer, key_bindings=splitkb)  # Editable buffer
 buffer3 = Buffer(document=Document(output, 0))  # Editable buffer.
 
 
-wspliter = Window(content=spliter, width=1, style="bg:#333333 ", cursorline=True)
+wspliter = Window(content=spliter, width=3, style="bg:#333333 ", cursorline=True)
 
 style = Style.from_dict({"cursor-line": "bg:#AAAAAA"})
 w1 = Window(content=buffercontrol1, ignore_content_height=True, cursorline=True, cursorcolumn=True, dont_extend_height=True)
@@ -270,11 +269,14 @@ def down_(event):
 def left_(event):
     """
     """
-    if sbuffer.document.text[sbuffer.document.cursor_position] == " ":
+    if (sbuffer.document.text[sbuffer.document.cursor_position] == " " and
+            sbuffer.document.text[sbuffer.document.cursor_position] == "?"):
         return
 
     replace_line(buffer1.document.current_line)
     new_text = change_char(sbuffer.document.text, sbuffer.document.cursor_position, "<")
+    new_text = change_char(new_text, sbuffer.document.cursor_position + 1, "=")
+    new_text = change_char(new_text, sbuffer.document.cursor_position + 2, "=")
     sbuffer.set_document(Document(new_text, sbuffer.document.cursor_position), bypass_readonly=True)
 
 @splitkb.add('>')
@@ -282,13 +284,15 @@ def left_(event):
 def right_(event):
     """
     """
-
-    if sbuffer.document.text[sbuffer.document.cursor_position] == " ":
+    if (sbuffer.document.text[sbuffer.document.cursor_position] == " " and
+            sbuffer.document.text[sbuffer.document.cursor_position] == "?"):
         return
 
     replace_line(buffer2.document.current_line)
 
-    new_text = change_char(sbuffer.document.text, sbuffer.document.cursor_position, ">")
+    new_text = change_char(sbuffer.document.text, sbuffer.document.cursor_position, "=")
+    new_text = change_char(new_text, sbuffer.document.cursor_position + 1, "=")
+    new_text = change_char(new_text, sbuffer.document.cursor_position + 2, ">")
     sbuffer.set_document(Document(new_text, sbuffer.document.cursor_position), bypass_readonly=True)
 
 @kb.add('c-up')
