@@ -52,37 +52,86 @@ d = Differ()
 
 #comparison = list(d.compare(data1, data2))
 comparison = list(d.compare(data1.splitlines(keepends=True), data2.splitlines(keepends=True)))
+comparisonA = list(d.compare(data3.splitlines(keepends=True), data1.splitlines(keepends=True)))
+comparisonB = list(d.compare(data3.splitlines(keepends=True), data2.splitlines(keepends=True)))
 print(comparison)
 #dataA = comparison
 
 a = []
 b = []
 c = []
-for line in comparison:
-    #s = ("", " ")
+previous = ''
+previous_removes = []
+previous_adds = []
+for line in comparisonA:
+    # s = ("", " ")
     s = " \n"
     if line.startswith("-"):
-        #s = ("fg:#ffffff", "<")
+        previous = '-'
+        previous_removes.append(line)
         s = "?\n"
-        # a.append(("bg:#ff0000 class:color-column:#ff0000", line))
-        a.append(line)
-
         c.append(s)
     else:
         if line.startswith("+"):
+            previous = '+'
+            previous_adds.append(line)
             s = "?\n"
-
-            # s = ("fg:#ffffff", ">")
-
-            b.append(line)
             c.append(s)
         else:
             if not line.startswith("?"):
-
-                # a.append(("", line))
+                if previous == '-':
+                    for remove in previous_removes:
+                        a.append("---------------------\n")
+                if previous == '+':
+                    for add in previous_adds:
+                        a.append(add)
+                    extra_removes = len(previous_removes) - len(previous_adds)
+                    if extra_removes > 0:
+                        for remove in range(extra_removes):
+                            a.append("--------------------\n")
+                previous = ''
+                previous_removes = []
+                previous_adds = []
                 a.append(line)
-                b.append(line)
                 c.append(s)
+
+i = 0
+previous = ''
+previous_removes = []
+previous_adds = []
+for line in comparisonB:
+    s = " \n"
+    if line.startswith("-"):
+        previous = '-'
+        previous_removes.append(line)
+        s = "?\n"
+        # b.append(line)
+        c[i] = s
+    else:
+        if line.startswith("+"):
+            previous = '+'
+            previous_adds.append(line)
+            s = "?\n"
+            # b.append(line)
+            c[i] = s
+        else:
+            if not line.startswith("?"):
+                if previous == '-':
+                    for remove in previous_removes:
+                        b.append("---------------------\n")
+                if previous == '+':
+                    for add in previous_adds:
+                        b.append(add)
+                    extra_removes = len(previous_removes) - len(previous_adds)
+                    if extra_removes > 0:
+                        for remove in range(extra_removes):
+                            b.append("--------------------\n")
+                previous = ''
+                previous_removes = []
+                previous_adds = []
+                b.append(line)
+                # c.append(s)
+    i += 1
 
 
 buffer1 = Buffer(document=Document("".join(a), 0), read_only=True)  # Editable buffer.
