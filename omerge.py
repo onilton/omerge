@@ -264,6 +264,36 @@ def down_(event):
     sbuffer.set_document(Document(text, sbuffer.document.cursor_position), bypass_readonly=True)
 
 
+def unpick_around(cursor_position, get_next_position):
+    if cursor_position > 0:
+        if (sbuffer.document.text[cursor_position + 1] == "="):
+            return
+
+        if (sbuffer.document.text[cursor_position + 1] == " "):
+            return
+
+        new_text = change_char(sbuffer.document.text, cursor_position, " ")
+        new_text = change_char(new_text, cursor_position + 1, "?")
+        new_text = change_char(new_text, cursor_position + 2, " ")
+
+        sbuffer.set_document(Document(new_text, sbuffer.document.cursor_position), bypass_readonly=True)
+
+        pick_around(get_next_position(cursor_position), get_next_position)
+
+def pick_around(cursor_position, get_next_position):
+    if cursor_position > 0:
+        if (sbuffer.document.text[cursor_position + 1] == " "):
+            return
+
+        new_text = change_char(sbuffer.document.text, cursor_position, "<")
+        new_text = change_char(new_text, cursor_position + 1, "|")
+        new_text = change_char(new_text, cursor_position + 2, " ")
+
+        sbuffer.set_document(Document(new_text, sbuffer.document.cursor_position), bypass_readonly=True)
+
+        pick_around(get_next_position(cursor_position), get_next_position)
+
+
 @splitkb.add('<')
 @splitkb.add('left')
 def left_(event):
@@ -273,11 +303,26 @@ def left_(event):
             sbuffer.document.text[sbuffer.document.cursor_position] == "?"):
         return
 
+    middle = "="
+    last = "="
+    if (sbuffer.document.text[sbuffer.document.cursor_position] == "<" and
+            sbuffer.document.text[sbuffer.document.cursor_position + 1] == "="):
+        pick_around(sbuffer.document.cursor_position - 4, lambda x: x-4)
+        pick_around(sbuffer.document.cursor_position + 4, lambda x: x+4)
+        middle = "|"
+        last = " "
+
+    if (sbuffer.document.text[sbuffer.document.cursor_position] == "<" and
+            sbuffer.document.text[sbuffer.document.cursor_position + 1] == "|"):
+        unpick_around(sbuffer.document.cursor_position - 4, lambda x: x-4)
+        unpick_around(sbuffer.document.cursor_position + 4, lambda x: x+4)
+
     replace_line(buffer1.document.current_line)
     new_text = change_char(sbuffer.document.text, sbuffer.document.cursor_position, "<")
-    new_text = change_char(new_text, sbuffer.document.cursor_position + 1, "=")
-    new_text = change_char(new_text, sbuffer.document.cursor_position + 2, "=")
+    new_text = change_char(new_text, sbuffer.document.cursor_position + 1, middle)
+    new_text = change_char(new_text, sbuffer.document.cursor_position + 2, last)
     sbuffer.set_document(Document(new_text, sbuffer.document.cursor_position), bypass_readonly=True)
+
 
 @splitkb.add('>')
 @splitkb.add('right')
