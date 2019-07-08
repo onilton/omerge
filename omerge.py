@@ -299,28 +299,23 @@ def pick_around(cursor_position, get_next_position):
 def left_(event):
     """
     """
-    if (sbuffer.document.text[sbuffer.document.cursor_position] == " " and
-            sbuffer.document.text[sbuffer.document.cursor_position] == "?"):
+    if sbuffer.document.current_line.startswith("   "):
         return
 
-    middle = "="
-    last = "="
-    if (sbuffer.document.text[sbuffer.document.cursor_position] == "<" and
-            sbuffer.document.text[sbuffer.document.cursor_position + 1] == "="):
+    pointer = "<=="
+    if sbuffer.document.current_line.startswith("<="):
         pick_around(sbuffer.document.cursor_position - 4, lambda x: x-4)
         pick_around(sbuffer.document.cursor_position + 4, lambda x: x+4)
-        middle = "|"
-        last = " "
+        pointer = "<| "
 
-    if (sbuffer.document.text[sbuffer.document.cursor_position] == "<" and
-            sbuffer.document.text[sbuffer.document.cursor_position + 1] == "|"):
+    if sbuffer.document.current_line.startswith("<|"):
         unpick_around(sbuffer.document.cursor_position - 4, lambda x: x-4)
         unpick_around(sbuffer.document.cursor_position + 4, lambda x: x+4)
 
     replace_line(buffer1.document.current_line)
-    new_text = change_char(sbuffer.document.text, sbuffer.document.cursor_position, "<")
-    new_text = change_char(new_text, sbuffer.document.cursor_position + 1, middle)
-    new_text = change_char(new_text, sbuffer.document.cursor_position + 2, last)
+    new_text = change_char(sbuffer.document.text, sbuffer.document.cursor_position, pointer[0])
+    new_text = change_char(new_text, sbuffer.document.cursor_position + 1, pointer[1])
+    new_text = change_char(new_text, sbuffer.document.cursor_position + 2, pointer[2])
     sbuffer.set_document(Document(new_text, sbuffer.document.cursor_position), bypass_readonly=True)
 
 
