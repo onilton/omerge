@@ -179,9 +179,17 @@ def sync_cursor(source_buffer, target_buffer):
         target_buffer.cursor_down(count=source_row)
 
 
-def debug(line):
-    new_text = str(line) + "\n" + buffer3.document.text
-    buffer3.set_document(Document(new_text, 0), True)
+def debug(line, a=None):
+    #pass
+    #new_text = str(line) + "\n" + horizbuffer.document.text
+    new_text = horizbuffer.document.text
+    new_text += "\n"
+    new_text += str(len(horizbuffer.document.lines))
+    new_text += "-"
+    new_text += str(line)
+    if a:
+        new_text += str(a)
+    horizbuffer.set_document(Document(new_text, len(new_text)), True)
 
 
 def replace_line(line):
@@ -212,6 +220,8 @@ spliter = BufferControl(buffer=sbuffer, key_bindings=splitkb)  # Editable buffer
 
 buffer3 = Buffer(document=Document(output, 0))  # Editable buffer.
 
+horizbuffer = Buffer(document=Document("", 0))
+
 
 wspliter = Window(content=spliter, width=3, style="bg:#333333 ", cursorline=True)
 
@@ -220,6 +230,9 @@ w1 = Window(content=buffercontrol1, ignore_content_height=True, cursorline=True,
 w2 = Window(content=BufferControl(buffer=buffer2), ignore_content_height=True, cursorline=True, dont_extend_height=True)
 w3 = Window(content=BufferControl(buffer=buffer3), ignore_content_height=True, cursorline=True, dont_extend_height=True,
             height=Dimension(weight=1))
+
+horizwindow = Window(content=BufferControl(buffer=horizbuffer), ignore_content_height=True, cursorline=True, dont_extend_height=True,
+                     height=Dimension(weight=1))
 #w2 = Window(content=FormattedTextControl(text='Helloo world'))
 
 @kb.add('c-q')
@@ -388,6 +401,7 @@ root_container = HSplit([
     # width by three for all these windows. The window will simply fill its
     # content by repeating this character.
     Window(height=1, char='-'),
+    horizwindow,
 
     # Display the text 'Hello world' on the right.
     # Window(content=FormattedTextControl(text='Hello world')),
