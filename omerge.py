@@ -277,34 +277,109 @@ def down_(event):
     sbuffer.set_document(Document(text, sbuffer.document.cursor_position), bypass_readonly=True)
 
 
-def unpick_around(cursor_position, get_next_position):
-    if cursor_position > 0:
-        if (sbuffer.document.text[cursor_position + 1] == "="):
-            return
+def get_diffblock_from_currentline():
+    first_previous_from_same_block = sbuffer.document.find_previous_matching_line(
+        lambda l: not l.startswith("   "))
 
-        if (sbuffer.document.text[cursor_position + 1] == " "):
-            return
 
-        new_text = change_char(sbuffer.document.text, cursor_position, " ")
-        new_text = change_char(new_text, cursor_position + 1, "?")
-        new_text = change_char(new_text, cursor_position + 2, " ")
+    debug("first_previous_from_same_block", first_previous_from_same_block)
+    start_line = sbuffer.document.cursor_position_row
+    if first_previous_from_same_block == -1:
+        first_previous_space = sbuffer.document.find_previous_matching_line(lambda l: l.startswith("   "))
 
-        sbuffer.set_document(Document(new_text, sbuffer.document.cursor_position), bypass_readonly=True)
+        debug("first_previous_space", first_previous_space)
+        start_line += first_previous_space + 1
 
-        pick_around(get_next_position(cursor_position), get_next_position)
+    debug("start_line", start_line)
 
-def pick_around(cursor_position, get_next_position):
-    if cursor_position > 0:
-        if (sbuffer.document.text[cursor_position + 1] == " "):
-            return
+    first_next_from_same_block = sbuffer.document.find_next_matching_line(
+        lambda l: not l.startswith("   "))
 
-        new_text = change_char(sbuffer.document.text, cursor_position, "<")
-        new_text = change_char(new_text, cursor_position + 1, "|")
-        new_text = change_char(new_text, cursor_position + 2, " ")
+    end_line = sbuffer.document.cursor_position_row + 1
+    if first_next_from_same_block == 1:
+        first_next_space = sbuffer.document.find_next_matching_line(lambda l: l.startswith("   "))
+        end_line += first_next_space - 1
 
-        sbuffer.set_document(Document(new_text, sbuffer.document.cursor_position), bypass_readonly=True)
+    return DiffBlock(start_line, end_line)
 
-        pick_around(get_next_position(cursor_position), get_next_position)
+class DiffBlock():
+    def __init__(self, start_line, end_line):
+        self.start_line = start_line
+        self.end_line = end_line
+        self.num_lines = end_line - start_line
+
+    def get_lines_from_doc(self, document):
+        return document.lines[self.start_line:self.end_line]
+
+    def of_buffer(self, buffer_):
+        return BufferBlock(buffer_, self)
+
+
+class BufferBlock():
+    def __init__(self, buffer_, diffblock):
+        self.block = diffblock
+        self.buffer = buffer_
+
+    def replace_lines(self, lines):
+        current_position_row = self.buffer.document.cursor_position_row
+
+        ups = current_position_row - self.block.start_line
+        #debug("cur" + str(current_position_row))
+        #debug("start" + str(self.block.start_line))
+        #debug("end" + str(self.block.end_line))
+        #debug("ups" + str(ups))
+
+        for _ in range(ups):
+            self.buffer.cursor_up()
+
+        for _ in lines:
+            self.buffer.delete(len(buffer3.document.current_line)+1)
+        self.buffer.insert_text("\n".join(lines) + "\n", move_cursor=False, fire_event=False)
+
+        for _ in range(ups):
+            self.buffer.cursor_down()
+
+    def replace_single(self, line):
+        current_position_row = self.buffer.document.cursor_position_row
+
+        debug("========")
+        debug("cur" + str(current_position_row))
+
+        debug("num_lines " + str(self.block.num_lines))
+        debug("start" + str(self.block.start_line))
+        debug("end" + str(self.block.end_line))
+        debug("========")
+
+        start_index = self.buffer.document.translate_row_col_to_index(self.block.start_line, 0)
+        end_index = self.buffer.document.translate_row_col_to_index(self.block.end_line, 0)
+
+        new_text = self.buffer.document.text[0:(start_index)]
+        #debug(")))" + new_text[-10:] + "((((")
+
+
+        debug("REMOVED" + self.buffer.document.text[start_index:end_index] + "REMOVEDEND")
+        cursor_position = self.buffer.document.cursor_position
+
+        for _ in range(self.block.num_lines):
+            debug(line + "\\n")
+            new_text += line + "\n"
+        new_text += self.buffer.document.text[end_index:]
+        #debug(")))" + self.buffer.document.text[end_index: end_index+20] + "(((")
+
+        self.buffer.set_document(Document(new_text, cursor_position), bypass_readonly=True)
+
+        debug("END REPLACE LINES")
+
+    def replace_current_line(self, line):
+        start_index = self.buffer.document.cursor_position + self.buffer.document.get_start_of_line_position()
+        end_index = self.buffer.document.cursor_position + self.buffer.document.get_end_of_line_position() + 1
+
+        new_text = self.buffer.document.text[0:start_index]
+        new_text += line + "\n"
+        new_text += self.buffer.document.text[end_index:]
+
+        cursor_position = self.buffer.document.cursor_position
+        self.buffer.set_document(Document(new_text, cursor_position), bypass_readonly=True)
 
 
 @splitkb.add('<')
@@ -315,21 +390,27 @@ def left_(event):
     if sbuffer.document.current_line.startswith("   "):
         return
 
-    pointer = "<=="
+    diff_block = get_diffblock_from_currentline()
+
+    # pointer = "<=="
     if sbuffer.document.current_line.startswith("<="):
-        pick_around(sbuffer.document.cursor_position - 4, lambda x: x-4)
-        pick_around(sbuffer.document.cursor_position + 4, lambda x: x+4)
-        pointer = "<| "
+        debug("startswith <=")
+
+        diff_block.of_buffer(buffer3).replace_lines(diff_block.get_lines_from_doc(buffer1.document))
+        diff_block.of_buffer(sbuffer).replace_single("<| ")
+        return
 
     if sbuffer.document.current_line.startswith("<|"):
-        unpick_around(sbuffer.document.cursor_position - 4, lambda x: x-4)
-        unpick_around(sbuffer.document.cursor_position + 4, lambda x: x+4)
+        diff_block.of_buffer(sbuffer).replace_single(" ? ")
+        replace_line(buffer1.document.current_line)
 
-    replace_line(buffer1.document.current_line)
-    new_text = change_char(sbuffer.document.text, sbuffer.document.cursor_position, pointer[0])
-    new_text = change_char(new_text, sbuffer.document.cursor_position + 1, pointer[1])
-    new_text = change_char(new_text, sbuffer.document.cursor_position + 2, pointer[2])
-    sbuffer.set_document(Document(new_text, sbuffer.document.cursor_position), bypass_readonly=True)
+        return
+
+    if sbuffer.document.current_line.startswith(" ?"):
+        debug("single")
+        replace_line(buffer1.document.current_line)
+
+        diff_block.of_buffer(sbuffer).replace_current_line("<==")
 
 
 @splitkb.add('>')
