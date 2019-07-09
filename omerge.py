@@ -403,7 +403,8 @@ def left_(event):
         return
 
     if (sbuffer.document.current_line.startswith(" ?") or
-            sbuffer.document.current_line.startswith("==")):
+            sbuffer.document.current_line.startswith("==") or
+            sbuffer.document.current_line.endswith("|>")):
         replace_line(buffer1.document.current_line)
 
         diff_block.of_buffer(sbuffer).replace_current_line("<==")
@@ -430,15 +431,12 @@ def right_(event):
         return
 
     if (sbuffer.document.current_line.startswith(" ?") or
-            sbuffer.document.current_line.endswith("==")):
+            sbuffer.document.current_line.endswith("==") or
+            sbuffer.document.current_line.startswith("<|")):
         replace_line(buffer2.document.current_line)
 
         diff_block.of_buffer(sbuffer).replace_current_line("==>")
 
-    new_text = change_char(sbuffer.document.text, sbuffer.document.cursor_position, "=")
-    new_text = change_char(new_text, sbuffer.document.cursor_position + 1, "=")
-    new_text = change_char(new_text, sbuffer.document.cursor_position + 2, ">")
-    sbuffer.set_document(Document(new_text, sbuffer.document.cursor_position), bypass_readonly=True)
 
 @kb.add('c-up')
 def w1_(event):
