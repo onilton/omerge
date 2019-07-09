@@ -36,8 +36,11 @@ with open(args.base, 'r') as base:
     base = base.read()
     data3 = base
 
+prefix = ">>>>>>> "
 remote = next(line for line in merged.splitlines() if line.startswith(">>>>>>>"))
+remote = remote[len(prefix):]
 local = next(line for line in merged.splitlines() if line.startswith("<<<<<<<"))
+local = local[len(prefix):]
 if 'HEAD' in local:
     result = subprocess.run(['git', 'branch', '--no-color'], stdout=subprocess.PIPE)
     branches = result.stdout.decode("utf-8").splitlines()
@@ -490,7 +493,7 @@ root_container = HSplit([
 
 
         HSplit([
-         Window(content=FormattedTextControl(text='REMOTE' + remote), height=1, char=' ', style="bg:#555555"),
+         Window(content=FormattedTextControl(text='REMOTE - ' + remote), height=1, char=' ', style="bg:#555555"),
          w2,
         ]),
     ], height=Dimension(weight=1)),
