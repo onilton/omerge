@@ -392,10 +392,7 @@ def left_(event):
 
     diff_block = get_diffblock_from_currentline()
 
-    # pointer = "<=="
     if sbuffer.document.current_line.startswith("<="):
-        debug("startswith <=")
-
         diff_block.of_buffer(buffer3).replace_lines(diff_block.get_lines_from_doc(buffer1.document))
         diff_block.of_buffer(sbuffer).replace_single("<| ")
         return
@@ -403,11 +400,10 @@ def left_(event):
     if sbuffer.document.current_line.startswith("<|"):
         diff_block.of_buffer(sbuffer).replace_single(" ? ")
         replace_line(buffer1.document.current_line)
-
         return
 
-    if sbuffer.document.current_line.startswith(" ?"):
-        debug("single")
+    if (sbuffer.document.current_line.startswith(" ?") or
+            sbuffer.document.current_line.startswith("==")):
         replace_line(buffer1.document.current_line)
 
         diff_block.of_buffer(sbuffer).replace_current_line("<==")
@@ -418,11 +414,26 @@ def left_(event):
 def right_(event):
     """
     """
-    if (sbuffer.document.text[sbuffer.document.cursor_position] == " " and
-            sbuffer.document.text[sbuffer.document.cursor_position] == "?"):
+    if sbuffer.document.current_line.startswith("   "):
         return
 
-    replace_line(buffer2.document.current_line)
+    diff_block = get_diffblock_from_currentline()
+
+    if sbuffer.document.current_line.endswith("=>"):
+        diff_block.of_buffer(buffer3).replace_lines(diff_block.get_lines_from_doc(buffer2.document))
+        diff_block.of_buffer(sbuffer).replace_single(" |>")
+        return
+
+    if sbuffer.document.current_line.endswith(" |>"):
+        diff_block.of_buffer(sbuffer).replace_single(" ? ")
+        replace_line(buffer2.document.current_line)
+        return
+
+    if (sbuffer.document.current_line.startswith(" ?") or
+            sbuffer.document.current_line.endswith("==")):
+        replace_line(buffer2.document.current_line)
+
+        diff_block.of_buffer(sbuffer).replace_current_line("==>")
 
     new_text = change_char(sbuffer.document.text, sbuffer.document.cursor_position, "=")
     new_text = change_char(new_text, sbuffer.document.cursor_position + 1, "=")
