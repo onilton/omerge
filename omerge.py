@@ -162,7 +162,10 @@ for line in comparison_conflicts:
         if line.startswith("+") and no_previous_removal:
             output = output + "--------------------\n"
         else:
-            output = output + line
+            if line.startswith("+"):
+                output = output + "?" + line[1:]
+            else:
+                output = output + line
     no_previous_removal = line.startswith(" ") or line.startswith("+")
 
 
