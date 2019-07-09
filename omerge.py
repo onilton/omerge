@@ -153,11 +153,17 @@ for line in merged.splitlines(keepends=True):
 
 comparison_conflicts = list(d.compare(conflict_file, base.splitlines(keepends=True)))
 
+no_previous_removal = True
 output = ""
 for line in comparison_conflicts:
-    print(line[:-1])
+    if not line.startswith("?"):
+        print(line[:-1])
     if not (line.startswith("-") or line.startswith("?")):
-        output = output + line
+        if line.startswith("+") and no_previous_removal:
+            output = output + "--------------------\n"
+        else:
+            output = output + line
+    no_previous_removal = line.startswith(" ") or line.startswith("+")
 
 
 buffer1 = Buffer(document=Document("".join(a), 0), read_only=True)  # Editable buffer.
