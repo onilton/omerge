@@ -3,7 +3,7 @@ from prompt_toolkit import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.layout.containers import VSplit, HSplit, Window
 from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
-from prompt_toolkit.layout import Layout, BufferControl, FormattedTextControl, UIContent, Dimension
+from prompt_toolkit.layout import Layout, BufferControl, FormattedTextControl, UIContent, Dimension, NumberedMargin
 from prompt_toolkit.layout.processors import AfterInput
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.formatted_text import FormattedText
@@ -225,11 +225,11 @@ horizbuffer = Buffer(document=Document("", 0))
 
 wspliter = Window(content=spliter, width=3, style="bg:#333333 ", cursorline=True)
 
-style = Style.from_dict({"cursor-line": "bg:#AAAAAA"})
-w1 = Window(content=buffercontrol1, ignore_content_height=True, cursorline=True, dont_extend_height=True)
-w2 = Window(content=BufferControl(buffer=buffer2), ignore_content_height=True, cursorline=True, dont_extend_height=True)
+style = Style.from_dict({"cursor-line": "bg:#AAAAAA", "current-line-number": "bg:#AAAAAA"})
+w1 = Window(content=buffercontrol1, ignore_content_height=True, cursorline=True, dont_extend_height=True, left_margins=[NumberedMargin()])
+w2 = Window(content=BufferControl(buffer=buffer2), ignore_content_height=True, cursorline=True, dont_extend_height=True, left_margins=[NumberedMargin()])
 w3 = Window(content=BufferControl(buffer=buffer3), ignore_content_height=True, cursorline=True, dont_extend_height=True,
-            height=Dimension(weight=1))
+            height=Dimension(weight=1), left_margins=[NumberedMargin()])
 
 horizwindow = Window(content=BufferControl(buffer=horizbuffer), ignore_content_height=True, cursorline=True, dont_extend_height=True,
                      height=Dimension(weight=1))
