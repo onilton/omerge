@@ -566,6 +566,16 @@ def w3_(event):
     event.app.layout.focus(output_window)
 
 
+hotkeys = {
+    '<': 'pick left',
+    '>': 'pick right',
+    'C-down':  'go to output',
+    'C-q': 'quit',
+    'C-s': 'accept changes',
+}
+
+
+hotkeys_str = " | ".join([key + " (" + description + ")" for (key, description) in hotkeys.items()])
 
 root_container = HSplit([
     # One window that holds the BufferControl with the default buffer on
@@ -589,11 +599,13 @@ root_container = HSplit([
         ]),
     ], height=Dimension(weight=1)),
 
-    # A vertical line in the middle. We explicitly specify the width, to
-    # make sure that the layout engine will not try to divide the whole
-    # width by three for all these windows. The window will simply fill its
-    # content by repeating this character.
-    Window(height=1, char='-'),
+
+    # The output titlebar: a vertical line in the middle.
+    Window(
+        content=FormattedTextControl(text='OUTPUT | Keys: ' + hotkeys_str),
+        height=1,
+        char=' ',
+        style="bg:#555555"),
     #debug_window,
 
     # Display the text 'Hello world' on the right.
