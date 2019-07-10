@@ -324,6 +324,21 @@ def exit_(event):
     event.app.exit()
 
 
+@kb.add('c-s')
+def save_and_exit_(event):
+    """
+    """
+    for line in output_buffer.document.lines:
+        if line.startswith("?"):
+            return
+    with open(args.merged, 'wt') as merged_file:
+        for line in output_buffer.document.lines:
+            if not line[1:].startswith("--"):
+                merged_file.write(line[2:] + "\n")
+
+    event.app.exit()
+
+
 def change_char(s, p, r):
     return s[:p]+r+s[p+1:]
 
