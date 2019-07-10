@@ -79,26 +79,28 @@ for line in comparisonA:
     if line.startswith("-"):
         previous = '-'
         previous_removes.append(line)
-        s = " ? \n"
-        c.append(s)
     else:
         if line.startswith("+"):
             previous = '+'
             previous_adds.append(line)
-            s = " ? \n"
-            c.append(s)
         else:
             if not line.startswith("?"):
                 if previous == '-':
                     for remove in previous_removes:
                         a.append("---------------------\n")
+                        s = " ? \n"
+                        c.append(s)
                 if previous == '+':
                     for add in previous_adds:
                         a.append(add)
+                        s = " ? \n"
+                        c.append(s)
                     extra_removes = len(previous_removes) - len(previous_adds)
                     if extra_removes > 0:
                         for remove in range(extra_removes):
                             a.append("--------------------\n")
+                            s = " ? \n"
+                            c.append(s)
                 previous = ''
                 previous_removes = []
                 previous_adds = []
