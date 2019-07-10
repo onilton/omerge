@@ -4,9 +4,9 @@ from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.layout.containers import VSplit, HSplit, Window
 from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
 from prompt_toolkit.layout import Layout, BufferControl, FormattedTextControl, UIContent, Dimension, NumberedMargin, ScrollOffsets
-from prompt_toolkit.layout.processors import AfterInput
+from prompt_toolkit.layout.processors import AfterInput, Processor, Transformation
 from prompt_toolkit.key_binding import KeyBindings
-from prompt_toolkit.formatted_text import FormattedText
+from prompt_toolkit.formatted_text import FormattedText, to_formatted_text, fragment_list_len, fragment_list_to_text
 from prompt_toolkit.document import Document
 from prompt_toolkit.styles import Style
 from difflib import Differ
@@ -172,8 +172,36 @@ for line in comparison_conflicts:
     no_previous_removal = line.startswith(" ") or line.startswith("+")
 
 
+class AddStyleToDiff(Processor):
+    """
+    Insert style before the input. for -, +
+    """
+    def __init__(self, style: str = '') -> None:
+        self.style = style
+
+    def apply_transformation(self, ti):
+        len_frag = fragment_list_len(ti.fragments)
+        if len_frag >= 2:
+            fragments_before = to_formatted_text(ti.fragments[0][1][:2], self.style)
+
+            fragments = fragments_before
+            fragments += [(ti.fragments[0][0], ti.fragments[0][1][2:])]
+            fragments += ti.fragments[1:]
+        else:
+            fragments = ti.fragments
+
+        source_to_display = lambda i: i
+        display_to_source = lambda i: i
+
+        return Transformation(fragments, source_to_display=source_to_display,
+                              display_to_source=display_to_source)
+
+    def __repr__(self) -> str:
+        return 'AddStyleToDiff(%r, %r)' % (self.text, self.style)
+
+
 buffer1 = Buffer(document=Document("".join(a), 0), read_only=True)  # Editable buffer.
-buffercontrol1 = BufferControl(buffer=buffer1)  # Editable buffer.
+buffercontrol1 = BufferControl(buffer=buffer1, input_processors=[AddStyleToDiff("bg:#222222")])  # Editable buffer.
 
 
 
@@ -237,10 +265,14 @@ horizbuffer = Buffer(document=Document("", 0))
 
 wspliter = Window(content=spliter, width=3, style="bg:#333333 ", cursorline=True, scroll_offsets=ScrollOffsets(top=10, bottom=10))
 
+
 style = Style.from_dict({"cursor-line": "bg:#999999", "current-line-number": "bg:#999999 fg:#DDDDDD"})
 w1 = Window(content=buffercontrol1, ignore_content_height=True, cursorline=True, dont_extend_height=True, left_margins=[NumberedMargin()], scroll_offsets=ScrollOffsets(top=10, bottom=10))
-w2 = Window(content=BufferControl(buffer=buffer2), ignore_content_height=True, cursorline=True, dont_extend_height=True, left_margins=[NumberedMargin()], scroll_offsets=ScrollOffsets(top=10, bottom=10))
-w3 = Window(content=BufferControl(buffer=buffer3), ignore_content_height=True, cursorline=True, dont_extend_height=True,
+buffercontrol2 = BufferControl(buffer=buffer2, input_processors=[AddStyleToDiff("bg:#222222")])
+w2 = Window(content=buffercontrol2, ignore_content_height=True, cursorline=True, dont_extend_height=True, left_margins=[NumberedMargin()], scroll_offsets=ScrollOffsets(top=10, bottom=10), )
+
+buffercontrol3 = BufferControl(buffer=buffer3, input_processors=[AddStyleToDiff("bg:#222222")])  # Editable buffer.
+w3 = Window(content=buffercontrol3, ignore_content_height=True, cursorline=True, dont_extend_height=True,
             height=Dimension(weight=1), left_margins=[NumberedMargin()], scroll_offsets=ScrollOffsets(top=10, bottom=10))
 
 
