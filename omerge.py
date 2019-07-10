@@ -248,6 +248,7 @@ def cursor_changed(x):
     sync_cursor(sbuffer, local_file_buffer)
     sync_cursor(sbuffer, remote_file_buffer)
     sync_cursor(sbuffer, output_buffer)
+    sync_cursor(sbuffer, backup_buffer)
 
 
 style = Style.from_dict({
@@ -296,6 +297,19 @@ output_buffer_control = BufferControl(
     input_processors=[AddStyleToDiff("bg:#222222")])
 output_window = Window(
     content=output_buffer_control,
+    ignore_content_height=True,
+    cursorline=True,
+    dont_extend_height=True,
+    height=Dimension(weight=1),
+    left_margins=[NumberedMargin()],
+    scroll_offsets=ScrollOffsets(top=10, bottom=10))
+
+backup_buffer = Buffer(document=Document(output, 0))
+backup_buffer_control = BufferControl(
+    buffer=backup_buffer,
+    input_processors=[AddStyleToDiff("bg:#222222")])
+backup_buffer_window = Window(
+    content=backup_buffer_control,
     ignore_content_height=True,
     cursorline=True,
     dont_extend_height=True,
@@ -501,7 +515,8 @@ def left_(event):
 
     if sbuffer.document.current_line.startswith("<|"):
         diff_block.of_buffer(sbuffer).replace_single(" ? ")
-        replace_line(replace_line_start(local_file_buffer.document.current_line, "A"))
+        diff_block.of_buffer(output_buffer).replace_lines(
+            diff_block.get_lines_from_doc(backup_buffer.document))
         return
 
     if (sbuffer.document.current_line.startswith(" ?") or
@@ -530,7 +545,8 @@ def right_(event):
 
     if sbuffer.document.current_line.endswith(" |>"):
         diff_block.of_buffer(sbuffer).replace_single(" ? ")
-        replace_line(replace_line_start(remote_file_buffer.document.current_line, "B"))
+        diff_block.of_buffer(output_buffer).replace_lines(
+            diff_block.get_lines_from_doc(backup_buffer.document))
         return
 
     if (sbuffer.document.current_line.startswith(" ?") or
