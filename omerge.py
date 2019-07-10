@@ -200,16 +200,13 @@ class AddStyleToDiff(Processor):
         return 'AddStyleToDiff(%r, %r)' % (self.text, self.style)
 
 
-buffer1 = Buffer(document=Document("".join(a), 0), read_only=True)  # Editable buffer.
-buffercontrol1 = BufferControl(buffer=buffer1, input_processors=[AddStyleToDiff("bg:#222222")])  # Editable buffer.
+local_file_buffer = Buffer(document=Document("".join(a), 0), read_only=True)  # Editable buffer.
+local_file_buffer_control = BufferControl(buffer=local_file_buffer, input_processors=[AddStyleToDiff("bg:#222222")])  # Editable buffer.
 
 
 
 
-#buffercontrol1 = FormattedTextControl(text=a)
-buffer2 = Buffer(document=Document("".join(b), 0), read_only=True)  # Editable buffer.
-#buffer1 = Buffer(document=Document(data1, 0))  # Editable buffer.
-#buffer2 = Buffer(document=Document(data2, 0))  # Editable buffer.
+remote_file_buffer = Buffer(document=Document("".join(b), 0), read_only=True)  # Editable buffer.
 
 def sync_cursor(source_buffer, target_buffer):
     old_target_text = target_buffer.document.text
@@ -233,9 +230,9 @@ def debug(line, a=None):
 
 
 def replace_line(line):
-    buffer3.delete(len(buffer3.document.current_line)+1)
-    buffer3.insert_text(line + "\n", move_cursor=False, fire_event=False)
-    #buffer3.insert_text(line[2:] + "\n", move_cursor=False, fire_event=False)
+    output_buffer.delete(len(output_buffer.document.current_line)+1)
+    output_buffer.insert_text(line + "\n", move_cursor=False, fire_event=False)
+    #output_buffer.insert_text(line[2:] + "\n", move_cursor=False, fire_event=False)
 
 
 #def change_on_cursor(source_buffer, target_buffer):
@@ -248,17 +245,15 @@ def replace_line(line):
 
 def cursor_changed(x):
     #debug(x)
-    sync_cursor(sbuffer, buffer1)
-    sync_cursor(sbuffer, buffer2)
-    sync_cursor(sbuffer, buffer3)
+    sync_cursor(sbuffer, local_file_buffer)
+    sync_cursor(sbuffer, remote_file_buffer)
+    sync_cursor(sbuffer, output_buffer)
 
 
-#spliter = FormattedTextControl(text=c)
-#sbuffer = Buffer(document=Document("".join(c), 0), readon_cursor_position_changed=cursor_changed)  # Editable buffer.
 sbuffer = Buffer(document=Document("".join(c), 0), read_only=True, on_cursor_position_changed=cursor_changed)  # Editable buffer.
 spliter = BufferControl(buffer=sbuffer, key_bindings=splitkb)  # Editable buffer.
 
-buffer3 = Buffer(document=Document(output, 0))  # Editable buffer.
+output_buffer = Buffer(document=Document(output, 0))  # Editable buffer.
 
 horizbuffer = Buffer(document=Document("", 0))
 
@@ -267,18 +262,17 @@ wspliter = Window(content=spliter, width=3, style="bg:#333333 ", cursorline=True
 
 
 style = Style.from_dict({"cursor-line": "bg:#999999", "current-line-number": "bg:#999999 fg:#DDDDDD"})
-w1 = Window(content=buffercontrol1, ignore_content_height=True, cursorline=True, dont_extend_height=True, left_margins=[NumberedMargin()], scroll_offsets=ScrollOffsets(top=10, bottom=10))
-buffercontrol2 = BufferControl(buffer=buffer2, input_processors=[AddStyleToDiff("bg:#222222")])
-w2 = Window(content=buffercontrol2, ignore_content_height=True, cursorline=True, dont_extend_height=True, left_margins=[NumberedMargin()], scroll_offsets=ScrollOffsets(top=10, bottom=10), )
+local_file_window = Window(content=local_file_buffer_control, ignore_content_height=True, cursorline=True, dont_extend_height=True, left_margins=[NumberedMargin()], scroll_offsets=ScrollOffsets(top=10, bottom=10))
+remote_file_buffer_control = BufferControl(buffer=remote_file_buffer, input_processors=[AddStyleToDiff("bg:#222222")])
+remote_file_window = Window(content=remote_file_buffer_control, ignore_content_height=True, cursorline=True, dont_extend_height=True, left_margins=[NumberedMargin()], scroll_offsets=ScrollOffsets(top=10, bottom=10), )
 
-buffercontrol3 = BufferControl(buffer=buffer3, input_processors=[AddStyleToDiff("bg:#222222")])  # Editable buffer.
-w3 = Window(content=buffercontrol3, ignore_content_height=True, cursorline=True, dont_extend_height=True,
+output_buffer_control = BufferControl(buffer=output_buffer, input_processors=[AddStyleToDiff("bg:#222222")])  # Editable buffer.
+output_window = Window(content=output_buffer_control, ignore_content_height=True, cursorline=True, dont_extend_height=True,
             height=Dimension(weight=1), left_margins=[NumberedMargin()], scroll_offsets=ScrollOffsets(top=10, bottom=10))
 
 
 horizwindow = Window(content=BufferControl(buffer=horizbuffer), ignore_content_height=True, cursorline=True, dont_extend_height=True,
                      height=Dimension(weight=1))
-#w2 = Window(content=FormattedTextControl(text='Helloo world'))
 
 @kb.add('c-q')
 def exit_(event):
@@ -378,7 +372,7 @@ class BufferBlock():
             self.buffer.cursor_up()
 
         for _ in lines:
-            self.buffer.delete(len(buffer3.document.current_line)+1)
+            self.buffer.delete(len(self.buffer.document.current_line)+1)
         self.buffer.insert_text("\n".join(lines) + "\n", move_cursor=False, fire_event=False)
 
         for _ in range(ups):
@@ -446,20 +440,20 @@ def left_(event):
     diff_block = get_diffblock_from_currentline()
 
     if sbuffer.document.current_line.startswith("<="):
-        diff_block.of_buffer(buffer3).replace_lines(
-            replace_lines_start(diff_block.get_lines_from_doc(buffer1.document), "A"))
+        diff_block.of_buffer(output_buffer).replace_lines(
+            replace_lines_start(diff_block.get_lines_from_doc(local_file_buffer.document), "A"))
         diff_block.of_buffer(sbuffer).replace_single("<| ")
         return
 
     if sbuffer.document.current_line.startswith("<|"):
         diff_block.of_buffer(sbuffer).replace_single(" ? ")
-        replace_line(replace_line_start(buffer1.document.current_line, "A"))
+        replace_line(replace_line_start(local_file_buffer.document.current_line, "A"))
         return
 
     if (sbuffer.document.current_line.startswith(" ?") or
             sbuffer.document.current_line.startswith("==") or
             sbuffer.document.current_line.endswith("|>")):
-        replace_line(replace_line_start(buffer1.document.current_line, "A"))
+        replace_line(replace_line_start(local_file_buffer.document.current_line, "A"))
 
         diff_block.of_buffer(sbuffer).replace_current_line("<==")
 
@@ -475,20 +469,20 @@ def right_(event):
     diff_block = get_diffblock_from_currentline()
 
     if sbuffer.document.current_line.endswith("=>"):
-        diff_block.of_buffer(buffer3).replace_lines(
-            replace_lines_start(diff_block.get_lines_from_doc(buffer2.document), "B"))
+        diff_block.of_buffer(output_buffer).replace_lines(
+            replace_lines_start(diff_block.get_lines_from_doc(remote_file_buffer.document), "B"))
         diff_block.of_buffer(sbuffer).replace_single(" |>")
         return
 
     if sbuffer.document.current_line.endswith(" |>"):
         diff_block.of_buffer(sbuffer).replace_single(" ? ")
-        replace_line(replace_line_start(buffer2.document.current_line, "B"))
+        replace_line(replace_line_start(remote_file_buffer.document.current_line, "B"))
         return
 
     if (sbuffer.document.current_line.startswith(" ?") or
             sbuffer.document.current_line.endswith("==") or
             sbuffer.document.current_line.startswith("<|")):
-        replace_line(replace_line_start(buffer2.document.current_line, "B"))
+        replace_line(replace_line_start(remote_file_buffer.document.current_line, "B"))
 
         diff_block.of_buffer(sbuffer).replace_current_line("==>")
 
@@ -503,19 +497,19 @@ def w1_(event):
 def w1_(event):
     """
     """
-    event.app.layout.focus(w1)
+    event.app.layout.focus(local_file_window)
 
 @kb.add('c-right')
 def w2_(event):
     """
     """
-    event.app.layout.focus(w2)
+    event.app.layout.focus(remote_file_window)
 
 @kb.add('c-down')
 def w3_(event):
     """
     """
-    event.app.layout.focus(w3)
+    event.app.layout.focus(output_window)
 
 
 
@@ -526,7 +520,7 @@ root_container = HSplit([
     VSplit([
         HSplit([
              Window(content=FormattedTextControl(text='LOCAL - ' + local), height=1, char=' ', style="bg:#555555"),
-             w1,
+             local_file_window,
         ]),
 
         HSplit([
@@ -537,7 +531,7 @@ root_container = HSplit([
 
         HSplit([
          Window(content=FormattedTextControl(text='REMOTE - ' + remote), height=1, char=' ', style="bg:#555555"),
-         w2,
+         remote_file_window,
         ]),
     ], height=Dimension(weight=1)),
 
@@ -546,11 +540,11 @@ root_container = HSplit([
     # width by three for all these windows. The window will simply fill its
     # content by repeating this character.
     Window(height=1, char='-'),
-    horizwindow,
+    #horizwindow,
 
     # Display the text 'Hello world' on the right.
     # Window(content=FormattedTextControl(text='Hello world')),
-    w3
+    output_window
 ])
 
 layout = Layout(root_container)
