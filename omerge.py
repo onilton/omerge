@@ -338,7 +338,7 @@ def update_output_titlebar():
     if sbuffer.document.current_line.endswith("|>"):
         hotkeys['>'] = 'unpick right block'
 
-    new_text = 'OUTPUT | Keys: '
+    new_text = ' OUTPUT | Keys: '
     new_text += " | ".join([key + " (" + description + ")" for (key, description) in hotkeys.items()])
     output_titlebar.content.text = new_text
 
@@ -641,7 +641,7 @@ root_container = HSplit([
 
     VSplit([
         HSplit([
-             Window(content=FormattedTextControl(text='LOCAL - ' + local), height=1, char=' ', style="bg:#555555"),
+             Window(content=FormattedTextControl(text=' A - LOCAL - ' + local), height=1, char=' ', style="bg:#555555"),
              local_file_window,
         ]),
 
@@ -652,7 +652,7 @@ root_container = HSplit([
 
 
         HSplit([
-         Window(content=FormattedTextControl(text='REMOTE - ' + remote), height=1, char=' ', style="bg:#555555"),
+         Window(content=FormattedTextControl(text=' B - REMOTE - ' + remote), height=1, char=' ', style="bg:#555555"),
          remote_file_window,
         ]),
     ], height=Dimension(weight=1)),
