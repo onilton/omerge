@@ -679,4 +679,11 @@ layout = Layout(root_container)
 app = Application(layout=layout, full_screen=True, key_bindings=kb, style=style)
 
 app.layout.focus(wspliter)
-app.run()
+
+def main():
+    """
+    """
+    app.run()
+
+if __name__ == "__main__":
+    main()
