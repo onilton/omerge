@@ -219,14 +219,14 @@ def sync_cursor(source_buffer, target_buffer):
 def debug(line, a=None):
     #pass
     #new_text = str(line) + "\n" + horizbuffer.document.text
-    new_text = horizbuffer.document.text
+    new_text = debug_buffer.document.text
     new_text += "\n"
-    new_text += str(len(horizbuffer.document.lines))
+    new_text += str(len(debug_buffer.document.lines))
     new_text += "-"
     new_text += str(line)
     if a:
         new_text += str(a)
-    horizbuffer.set_document(Document(new_text, len(new_text)), True)
+    debug_buffer.set_document(Document(new_text, len(new_text)), True)
 
 
 def replace_line(line):
@@ -304,9 +304,9 @@ output_window = Window(
     scroll_offsets=ScrollOffsets(top=10, bottom=10))
 
 
-horizbuffer = Buffer(document=Document("", 0))
-horizwindow = Window(
-    content=BufferControl(buffer=horizbuffer),
+debug_buffer = Buffer(document=Document("", 0))
+debug_window = Window(
+    content=BufferControl(buffer=debug_buffer),
     ignore_content_height=True,
     cursorline=True,
     dont_extend_height=True,
@@ -579,7 +579,7 @@ root_container = HSplit([
     # width by three for all these windows. The window will simply fill its
     # content by repeating this character.
     Window(height=1, char='-'),
-    #horizwindow,
+    #debug_window,
 
     # Display the text 'Hello world' on the right.
     # Window(content=FormattedTextControl(text='Hello world')),
