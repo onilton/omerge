@@ -237,11 +237,12 @@ horizbuffer = Buffer(document=Document("", 0))
 
 wspliter = Window(content=spliter, width=3, style="bg:#333333 ", cursorline=True, scroll_offsets=ScrollOffsets(top=10, bottom=10))
 
-style = Style.from_dict({"cursor-line": "bg:#AAAAAA", "current-line-number": "bg:#AAAAAA"})
+style = Style.from_dict({"cursor-line": "bg:#999999", "current-line-number": "bg:#999999 fg:#DDDDDD"})
 w1 = Window(content=buffercontrol1, ignore_content_height=True, cursorline=True, dont_extend_height=True, left_margins=[NumberedMargin()], scroll_offsets=ScrollOffsets(top=10, bottom=10))
 w2 = Window(content=BufferControl(buffer=buffer2), ignore_content_height=True, cursorline=True, dont_extend_height=True, left_margins=[NumberedMargin()], scroll_offsets=ScrollOffsets(top=10, bottom=10))
 w3 = Window(content=BufferControl(buffer=buffer3), ignore_content_height=True, cursorline=True, dont_extend_height=True,
             height=Dimension(weight=1), left_margins=[NumberedMargin()], scroll_offsets=ScrollOffsets(top=10, bottom=10))
+
 
 horizwindow = Window(content=BufferControl(buffer=horizbuffer), ignore_content_height=True, cursorline=True, dont_extend_height=True,
                      height=Dimension(weight=1))
