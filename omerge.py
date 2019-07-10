@@ -36,20 +36,27 @@ with open(args.base, 'r') as base:
     base = base.read()
     data3 = base
 
-prefix = ">>>>>>> "
-remote_branch = next(line for line in merged.splitlines() if line.startswith(">>>>>>>"))
-remote_branch = remote_branch[len(prefix):]
-local_branch = next(line for line in merged.splitlines() if line.startswith("<<<<<<<"))
-local_branch = local_branch[len(prefix):]
-if 'HEAD' in local_branch:
-    result = subprocess.run(['git', 'branch', '--no-color'], stdout=subprocess.PIPE)
-    branches = result.stdout.decode("utf-8").splitlines()
-    print(branches)
-    head_branch = next(line for line in branches if line.startswith("* "))
-    head_branch = head_branch[2:]
-    local_branch = head_branch
 
-#class Custom
+def get_normalized_branch(raw_conflict_line):
+    prefix = ">>>>>>> "
+    branch = raw_conflict_line[len(prefix):]
+    if 'HEAD' in branch:
+        result = subprocess.run(['git', 'branch', '--no-color'], stdout=subprocess.PIPE)
+        branches = result.stdout.decode("utf-8").splitlines()
+        print(branches)
+        head_branch = next(line for line in branches if line.startswith("* "))
+        head_branch = head_branch[2:]
+        branch = head_branch
+
+    return branch
+
+
+conflict_last_line = next(line for line in merged.splitlines() if line.startswith(">>>>>>>"))
+remote_branch = get_normalized_branch(conflict_last_line)
+
+conflict_first_line = next(line for line in merged.splitlines() if line.startswith("<<<<<<<"))
+local_branch = get_normalized_branch(conflict_first_line)
+
 
 d = Differ()
 
