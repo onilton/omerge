@@ -250,29 +250,68 @@ def cursor_changed(x):
     sync_cursor(sbuffer, output_buffer)
 
 
-sbuffer = Buffer(document=Document("".join(c), 0), read_only=True, on_cursor_position_changed=cursor_changed)  # Editable buffer.
-spliter = BufferControl(buffer=sbuffer, key_bindings=splitkb)  # Editable buffer.
+style = Style.from_dict({
+    "cursor-line": "bg:#999999",
+    "current-line-number": "bg:#999999 fg:#DDDDDD"
+})
 
-output_buffer = Buffer(document=Document(output, 0))  # Editable buffer.
+
+sbuffer = Buffer(
+    document=Document("".join(c), 0),
+    read_only=True,
+    on_cursor_position_changed=cursor_changed)
+spliter = BufferControl(buffer=sbuffer, key_bindings=splitkb)
+wspliter = Window(
+    content=spliter,
+    width=3,
+    style="bg:#333333 ",
+    cursorline=True,
+    scroll_offsets=ScrollOffsets(top=10, bottom=10))
+
+
+local_file_window = Window(
+    content=local_file_buffer_control,
+    ignore_content_height=True,
+    cursorline=True,
+    dont_extend_height=True,
+    left_margins=[NumberedMargin()],
+    scroll_offsets=ScrollOffsets(top=10, bottom=10))
+
+
+remote_file_buffer_control = BufferControl(
+    buffer=remote_file_buffer,
+    input_processors=[AddStyleToDiff("bg:#222222")])
+remote_file_window = Window(
+    content=remote_file_buffer_control,
+    ignore_content_height=True,
+    cursorline=True,
+    dont_extend_height=True,
+    left_margins=[NumberedMargin()],
+    scroll_offsets=ScrollOffsets(top=10, bottom=10))
+
+
+output_buffer = Buffer(document=Document(output, 0))
+output_buffer_control = BufferControl(
+    buffer=output_buffer,
+    input_processors=[AddStyleToDiff("bg:#222222")])
+output_window = Window(
+    content=output_buffer_control,
+    ignore_content_height=True,
+    cursorline=True,
+    dont_extend_height=True,
+    height=Dimension(weight=1),
+    left_margins=[NumberedMargin()],
+    scroll_offsets=ScrollOffsets(top=10, bottom=10))
+
 
 horizbuffer = Buffer(document=Document("", 0))
+horizwindow = Window(
+    content=BufferControl(buffer=horizbuffer),
+    ignore_content_height=True,
+    cursorline=True,
+    dont_extend_height=True,
+    height=Dimension(weight=1))
 
-
-wspliter = Window(content=spliter, width=3, style="bg:#333333 ", cursorline=True, scroll_offsets=ScrollOffsets(top=10, bottom=10))
-
-
-style = Style.from_dict({"cursor-line": "bg:#999999", "current-line-number": "bg:#999999 fg:#DDDDDD"})
-local_file_window = Window(content=local_file_buffer_control, ignore_content_height=True, cursorline=True, dont_extend_height=True, left_margins=[NumberedMargin()], scroll_offsets=ScrollOffsets(top=10, bottom=10))
-remote_file_buffer_control = BufferControl(buffer=remote_file_buffer, input_processors=[AddStyleToDiff("bg:#222222")])
-remote_file_window = Window(content=remote_file_buffer_control, ignore_content_height=True, cursorline=True, dont_extend_height=True, left_margins=[NumberedMargin()], scroll_offsets=ScrollOffsets(top=10, bottom=10), )
-
-output_buffer_control = BufferControl(buffer=output_buffer, input_processors=[AddStyleToDiff("bg:#222222")])  # Editable buffer.
-output_window = Window(content=output_buffer_control, ignore_content_height=True, cursorline=True, dont_extend_height=True,
-            height=Dimension(weight=1), left_margins=[NumberedMargin()], scroll_offsets=ScrollOffsets(top=10, bottom=10))
-
-
-horizwindow = Window(content=BufferControl(buffer=horizbuffer), ignore_content_height=True, cursorline=True, dont_extend_height=True,
-                     height=Dimension(weight=1))
 
 @kb.add('c-q')
 def exit_(event):
