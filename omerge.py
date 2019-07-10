@@ -646,7 +646,7 @@ root_container = HSplit([
         ]),
 
         HSplit([
-            Window(height=1, char=' ', style="bg:#555555"),
+            Window(height=1, char=' ', style="bg:#333333"),
             wspliter,
         ]),
 
