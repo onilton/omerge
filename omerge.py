@@ -274,7 +274,8 @@ spliter = BufferControl(buffer=sbuffer, key_bindings=splitkb)
 wspliter = Window(
     content=spliter,
     width=3,
-    style="bg:#333333 ",
+    style="bg:#333333",
+    always_hide_cursor=True,
     cursorline=True,
     scroll_offsets=ScrollOffsets(top=10, bottom=10))
 
