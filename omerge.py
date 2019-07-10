@@ -304,6 +304,48 @@ output_window = Window(
     left_margins=[NumberedMargin()],
     scroll_offsets=ScrollOffsets(top=10, bottom=10))
 
+
+hotkeys = {
+    '<': 'pick left',
+    '>': 'pick right',
+    'C-down':  'go to output',
+    'C-q': 'quit',
+    'C-s': 'accept changes',
+}
+
+
+# The output titlebar: a vertical line in the middle.
+output_titlebar = Window(
+    content=FormattedTextControl(text=''),
+    height=1,
+    char=' ',
+    style="bg:#555555")
+
+
+def update_output_titlebar():
+    hotkeys['<'] = 'pick left line'
+    hotkeys['>'] = 'pick right line'
+
+    if sbuffer.document.current_line.startswith("<="):
+        hotkeys['<'] = 'pick left block'
+
+    if sbuffer.document.current_line.endswith("=>"):
+        hotkeys['>'] = 'pick right block'
+
+    if sbuffer.document.current_line.startswith("<|"):
+        hotkeys['<'] = 'unpick left block'
+
+    if sbuffer.document.current_line.endswith("|>"):
+        hotkeys['>'] = 'unpick right block'
+
+    new_text = 'OUTPUT | Keys: '
+    new_text += " | ".join([key + " (" + description + ")" for (key, description) in hotkeys.items()])
+    output_titlebar.content.text = new_text
+
+
+update_output_titlebar()
+
+
 backup_buffer = Buffer(document=Document(output, 0))
 backup_buffer_control = BufferControl(
     buffer=backup_buffer,
@@ -511,12 +553,16 @@ def left_(event):
         diff_block.of_buffer(output_buffer).replace_lines(
             replace_lines_start(diff_block.get_lines_from_doc(local_file_buffer.document), "A"))
         diff_block.of_buffer(sbuffer).replace_single("<| ")
+
+        update_output_titlebar()
         return
 
     if sbuffer.document.current_line.startswith("<|"):
         diff_block.of_buffer(sbuffer).replace_single(" ? ")
         diff_block.of_buffer(output_buffer).replace_lines(
             diff_block.get_lines_from_doc(backup_buffer.document))
+
+        update_output_titlebar()
         return
 
     if (sbuffer.document.current_line.startswith(" ?") or
@@ -525,6 +571,8 @@ def left_(event):
         replace_line(replace_line_start(local_file_buffer.document.current_line, "A"))
 
         diff_block.of_buffer(sbuffer).replace_current_line("<==")
+
+        update_output_titlebar()
 
 
 @splitkb.add('>')
@@ -541,12 +589,16 @@ def right_(event):
         diff_block.of_buffer(output_buffer).replace_lines(
             replace_lines_start(diff_block.get_lines_from_doc(remote_file_buffer.document), "B"))
         diff_block.of_buffer(sbuffer).replace_single(" |>")
+
+        update_output_titlebar()
         return
 
     if sbuffer.document.current_line.endswith(" |>"):
         diff_block.of_buffer(sbuffer).replace_single(" ? ")
         diff_block.of_buffer(output_buffer).replace_lines(
             diff_block.get_lines_from_doc(backup_buffer.document))
+
+        update_output_titlebar()
         return
 
     if (sbuffer.document.current_line.startswith(" ?") or
@@ -555,6 +607,7 @@ def right_(event):
         replace_line(replace_line_start(remote_file_buffer.document.current_line, "B"))
 
         diff_block.of_buffer(sbuffer).replace_current_line("==>")
+        update_output_titlebar()
 
 
 @kb.add('c-up')
@@ -582,17 +635,6 @@ def w3_(event):
     event.app.layout.focus(output_window)
 
 
-hotkeys = {
-    '<': 'pick left',
-    '>': 'pick right',
-    'C-down':  'go to output',
-    'C-q': 'quit',
-    'C-s': 'accept changes',
-}
-
-
-hotkeys_str = " | ".join([key + " (" + description + ")" for (key, description) in hotkeys.items()])
-
 root_container = HSplit([
     # One window that holds the BufferControl with the default buffer on
     # the left.
@@ -617,11 +659,7 @@ root_container = HSplit([
 
 
     # The output titlebar: a vertical line in the middle.
-    Window(
-        content=FormattedTextControl(text='OUTPUT | Keys: ' + hotkeys_str),
-        height=1,
-        char=' ',
-        style="bg:#555555"),
+    output_titlebar,
     #debug_window,
 
     # Display the text 'Hello world' on the right.
