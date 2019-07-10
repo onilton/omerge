@@ -394,6 +394,14 @@ class BufferBlock():
         self.buffer.set_document(Document(new_text, cursor_position), bypass_readonly=True)
 
 
+def replace_lines_start(lines, replacement):
+    return [replace_line_start(line, replacement) for line in lines]
+
+
+def replace_line_start(line, replacement):
+    return replacement + line[len(replacement):]
+
+
 @splitkb.add('<')
 @splitkb.add('left')
 def left_(event):
@@ -405,19 +413,20 @@ def left_(event):
     diff_block = get_diffblock_from_currentline()
 
     if sbuffer.document.current_line.startswith("<="):
-        diff_block.of_buffer(buffer3).replace_lines(diff_block.get_lines_from_doc(buffer1.document))
+        diff_block.of_buffer(buffer3).replace_lines(
+            replace_lines_start(diff_block.get_lines_from_doc(buffer1.document), "A"))
         diff_block.of_buffer(sbuffer).replace_single("<| ")
         return
 
     if sbuffer.document.current_line.startswith("<|"):
         diff_block.of_buffer(sbuffer).replace_single(" ? ")
-        replace_line(buffer1.document.current_line)
+        replace_line(replace_line_start(buffer1.document.current_line, "A"))
         return
 
     if (sbuffer.document.current_line.startswith(" ?") or
             sbuffer.document.current_line.startswith("==") or
             sbuffer.document.current_line.endswith("|>")):
-        replace_line(buffer1.document.current_line)
+        replace_line(replace_line_start(buffer1.document.current_line, "A"))
 
         diff_block.of_buffer(sbuffer).replace_current_line("<==")
 
@@ -433,19 +442,20 @@ def right_(event):
     diff_block = get_diffblock_from_currentline()
 
     if sbuffer.document.current_line.endswith("=>"):
-        diff_block.of_buffer(buffer3).replace_lines(diff_block.get_lines_from_doc(buffer2.document))
+        diff_block.of_buffer(buffer3).replace_lines(
+            replace_lines_start(diff_block.get_lines_from_doc(buffer2.document), "B"))
         diff_block.of_buffer(sbuffer).replace_single(" |>")
         return
 
     if sbuffer.document.current_line.endswith(" |>"):
         diff_block.of_buffer(sbuffer).replace_single(" ? ")
-        replace_line(buffer2.document.current_line)
+        replace_line(replace_line_start(buffer2.document.current_line, "B"))
         return
 
     if (sbuffer.document.current_line.startswith(" ?") or
             sbuffer.document.current_line.endswith("==") or
             sbuffer.document.current_line.startswith("<|")):
-        replace_line(buffer2.document.current_line)
+        replace_line(replace_line_start(buffer2.document.current_line, "B"))
 
         diff_block.of_buffer(sbuffer).replace_current_line("==>")
 
