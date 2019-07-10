@@ -37,17 +37,17 @@ with open(args.base, 'r') as base:
     data3 = base
 
 prefix = ">>>>>>> "
-remote = next(line for line in merged.splitlines() if line.startswith(">>>>>>>"))
-remote = remote[len(prefix):]
-local = next(line for line in merged.splitlines() if line.startswith("<<<<<<<"))
-local = local[len(prefix):]
-if 'HEAD' in local:
+remote_branch = next(line for line in merged.splitlines() if line.startswith(">>>>>>>"))
+remote_branch = remote_branch[len(prefix):]
+local_branch = next(line for line in merged.splitlines() if line.startswith("<<<<<<<"))
+local_branch = local_branch[len(prefix):]
+if 'HEAD' in local_branch:
     result = subprocess.run(['git', 'branch', '--no-color'], stdout=subprocess.PIPE)
     branches = result.stdout.decode("utf-8").splitlines()
     print(branches)
     head_branch = next(line for line in branches if line.startswith("* "))
     head_branch = head_branch[2:]
-    local = head_branch
+    local_branch = head_branch
 
 #class Custom
 
@@ -641,7 +641,7 @@ root_container = HSplit([
 
     VSplit([
         HSplit([
-             Window(content=FormattedTextControl(text=' A - LOCAL - ' + local), height=1, char=' ', style="bg:#555555"),
+             Window(content=FormattedTextControl(text=' A - LOCAL - ' + local_branch), height=1, char=' ', style="bg:#555555"),
              local_file_window,
         ]),
 
@@ -652,7 +652,7 @@ root_container = HSplit([
 
 
         HSplit([
-         Window(content=FormattedTextControl(text=' B - REMOTE - ' + remote), height=1, char=' ', style="bg:#555555"),
+         Window(content=FormattedTextControl(text=' B - REMOTE - ' + remote_branch), height=1, char=' ', style="bg:#555555"),
          remote_file_window,
         ]),
     ], height=Dimension(weight=1)),
