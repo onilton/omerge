@@ -457,7 +457,7 @@ def smart_up(event):
     position = sbuffer.document.cursor_position
     offsets = [doc.find_backwards("?"), doc.find_backwards("<"),
                doc.find_backwards(">")]
-    offsets = sorted([p for p in offsets if p is not None])
+    offsets = sorted([p for p in offsets if p is not None], reverse=True)
     offset = next(iter(offsets), None)
 
     if offset:
