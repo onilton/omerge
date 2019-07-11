@@ -332,7 +332,8 @@ output_window = Window(
 hotkeys = {
     '<': 'pick left line',
     '>': 'pick right line',
-    'C-down':  'go to output',
+    'C-up':  None,
+    'C-down': 'go to output',
     'C-q': 'quit',
     'C-s': 'accept changes',
 }
@@ -371,7 +372,10 @@ def update_output_titlebar():
         hotkeys['>'] = 'unpick right block'
 
     new_text = ' OUTPUT | Keys: '
-    new_text += " | ".join([key + " (" + description + ")" for (key, description) in hotkeys.items()])
+    new_text += " | ".join(
+        [key + " (" + description + ")"
+         for (key, description) in hotkeys.items()
+         if description is not None])
     output_titlebar.content.text = new_text
 
 
@@ -654,6 +658,8 @@ def right_(event):
 def w1_(event):
     """
     """
+    hotkeys["C-down"] = 'go to output'
+    hotkeys["C-up"] = None
     event.app.layout.focus(wspliter)
 
 @kb.add('c-left')
@@ -672,6 +678,9 @@ def w2_(event):
 def w3_(event):
     """
     """
+    hotkeys["C-down"] = None
+    hotkeys["C-up"] = 'go to picker'
+    update_output_titlebar()
     event.app.layout.focus(output_window)
 
 
