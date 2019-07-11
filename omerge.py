@@ -435,7 +435,29 @@ def smart_down(event):
     offset = next(iter(offsets), None)
 
     if offset:
-        sbuffer.set_document(Document(doc.text, position + offset), bypass_readonly=True)
+        sbuffer.set_document(
+            Document(doc.text, position + offset),
+            bypass_readonly=True)
+
+
+@splitkb.add('up')
+def smart_up(event):
+    """
+    Smart up:
+        inside block, go one line up,
+        at the end of the block, go to previous conflict
+    """
+    doc = sbuffer.document
+    position = sbuffer.document.cursor_position
+    offsets = [doc.find_backwards("?"), doc.find_backwards("<"),
+               doc.find_backwards(">")]
+    offsets = sorted([p for p in offsets if p is not None])
+    offset = next(iter(offsets), None)
+
+    if offset:
+        sbuffer.set_document(
+            Document(doc.text, position + offset),
+            bypass_readonly=True)
 
 
 def get_diffblock_from_currentline():
