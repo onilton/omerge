@@ -8,8 +8,13 @@ Because what we had was not enough. :P (I need to improve this.)
 
 ## Install
 
-The easiest way is to get the single binary:
+The easiest way is to get the single binary (available in releases page). 
 
+Install with a single command:
+
+```
+sudo wget 'https://github.com/onilton/omerge/releases/download/v0.0.1/omerge' -O /usr/local/bin/omerge
+```
 
 #### Configuring as the git mergetool
 
@@ -25,7 +30,6 @@ git config --global mergetool.omerge.cmd '/my/path/to/omerge.py "$BASE" "$LOCAL"
 git config --global difftool.prompt false
 ```
 
-
 ## TO-DO
 
 * This was made as proof of concept, so the code needs a lot of love to become prettier
@@ -36,3 +40,4 @@ git config --global difftool.prompt false
 * Walk around code not only conflicts
 * Do not display `--------` for missing lines, instead dynamicaly move the cursor
 * Display error when saving and not all conflicts were resolved
+* Reduce single binary size
