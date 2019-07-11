@@ -271,7 +271,9 @@ style = Style.from_dict({
     "line-number": "bg:#222222",
     "current-line-number": "bg:#999999 fg:#DDDDDD bold",
     "file-viewer": "bg:#1c1c1c",
-    "titlebar": "bg:#404040"
+    "titlebar": "bg:#404040",
+    "picker": "bg:#333333",
+    "picker cursor-line": "reverse bold"
 })
 
 
@@ -283,7 +285,7 @@ spliter = BufferControl(buffer=sbuffer, key_bindings=splitkb)
 wspliter = Window(
     content=spliter,
     width=3,
-    style="bg:#333333",
+    style="class:picker",
     always_hide_cursor=True,
     cursorline=True,
     scroll_offsets=ScrollOffsets(top=10, bottom=10))
