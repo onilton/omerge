@@ -2,6 +2,14 @@
 
 A simple, intuitive and fast conflict resolution tool
 
+## Why
+
+Because what we had was not enough. :P (I need to improve this.)
+
+## Install
+
+The easiest way is to get the single binary:
+
 
 #### Configuring as the git mergetool
 
