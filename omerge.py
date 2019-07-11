@@ -258,6 +258,7 @@ def cursor_changed(x):
     sync_cursor(sbuffer, remote_file_buffer)
     sync_cursor(sbuffer, output_buffer)
     sync_cursor(sbuffer, backup_buffer)
+    update_output_titlebar()
 
 
 style = Style.from_dict({
@@ -316,8 +317,8 @@ output_window = Window(
 
 
 hotkeys = {
-    '<': 'pick left',
-    '>': 'pick right',
+    '<': 'pick left line',
+    '>': 'pick right line',
     'C-down':  'go to output',
     'C-q': 'quit',
     'C-s': 'accept changes',
@@ -333,8 +334,14 @@ output_titlebar = Window(
 
 
 def update_output_titlebar():
-    hotkeys['<'] = 'pick left line'
-    hotkeys['>'] = 'pick right line'
+    global hotkeys
+
+    new_hotkeys = {
+        '<': 'pick left line',
+        '>': 'pick right line'
+    }
+    new_hotkeys.update(hotkeys)
+    hotkeys = new_hotkeys
 
     if sbuffer.document.current_line.startswith("<="):
         hotkeys['<'] = 'pick left block'
@@ -347,6 +354,10 @@ def update_output_titlebar():
 
     if sbuffer.document.current_line.endswith("|>"):
         hotkeys['>'] = 'unpick right block'
+
+    if sbuffer.document.current_line.startswith("   "):
+        del hotkeys['<']
+        del hotkeys['>']
 
     new_text = ' OUTPUT | Keys: '
     new_text += " | ".join([key + " (" + description + ")" for (key, description) in hotkeys.items()])
