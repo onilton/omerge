@@ -348,19 +348,12 @@ output_titlebar = Window(
 
 
 def update_output_titlebar():
-    global hotkeys
-
-    new_hotkeys = {
-        '<': 'pick left line',
-        '>': 'pick right line'
-    }
-    new_hotkeys.update(hotkeys)
-    hotkeys = new_hotkeys
-
     if sbuffer.document.current_line.startswith("   "):
-        if '<' in hotkeys:
-            del hotkeys['<']
-            del hotkeys['>']
+        hotkeys['<'] = None
+        hotkeys['>'] = None
+    elif sbuffer.document.current_line.startswith(" ? "):
+        hotkeys['<'] = 'pick left line'
+        hotkeys['>'] = 'pick right line'
     elif sbuffer.document.current_line.startswith("<="):
         hotkeys['<'] = 'pick left block'
     elif sbuffer.document.current_line.endswith("=>"):
