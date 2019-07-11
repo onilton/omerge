@@ -69,7 +69,6 @@ packages = ["omerge"]
 
 # Package things from a populated virtualenv.
 [[packaging_rule]]
-built_target = "all"
 type = "virtualenv"
 path = "venv"
 
