@@ -422,26 +422,20 @@ def save_and_exit_(event):
 
 
 @splitkb.add('down')
-def down_(event):
+def smart_down(event):
     """
+    Smart down:
+        inside block, go one line down,
+        at the end of the block, go to next conflict
     """
-    text = sbuffer.document.text
+    doc = sbuffer.document
     position = sbuffer.document.cursor_position
-    indexA = text.find("?",  position + 1, len(text))
-    indexB = text.find("<",  position + 1, len(text))
-    indexC = text.find(">",  position + 1, len(text))
+    offsets = [doc.find("?"), doc.find("<"), doc.find(">")]
+    offsets = sorted([p for p in offsets if p is not None])
+    offset = next(iter(offsets), None)
 
-    index = indexA
-    if index < 0 or (indexB < index and indexB >= 0):
-        index = indexB
-
-    if index < 0 or (indexC < index and indexC >= 0):
-        index = indexC
-
-    if index >= 0:
-        sbuffer.set_document(Document(text, index), bypass_readonly=True)
-
-    sbuffer.set_document(Document(text, sbuffer.document.cursor_position), bypass_readonly=True)
+    if offset:
+        sbuffer.set_document(Document(doc.text, position + offset), bypass_readonly=True)
 
 
 def get_diffblock_from_currentline():
@@ -694,7 +688,7 @@ app.layout.focus(wspliter)
 def main():
     """
     """
-    down_(None)
+    smart_down(None)
     app.run()
 
 if __name__ == "__main__":
