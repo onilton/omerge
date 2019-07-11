@@ -165,6 +165,7 @@ for line in merged.splitlines(keepends=True):
 
 comparison_conflicts = list(d.compare(conflict_file, base.splitlines(keepends=True)))
 
+i = 0
 no_previous_removal = True
 output = ""
 for line in comparison_conflicts:
@@ -173,12 +174,16 @@ for line in comparison_conflicts:
     if not (line.startswith("-") or line.startswith("?")):
         if line.startswith("+") and no_previous_removal:
             output = output + "--------------------\n"
+            # Remove non-conflicts from picker
+            c[i] = "   \n"
         else:
             if line.startswith("+"):
+
                 output = output + "?" + line[1:]
             else:
                 output = output + line
     no_previous_removal = line.startswith(" ") or line.startswith("+")
+    i += 1
 
 
 class AddStyleToDiff(Processor):
