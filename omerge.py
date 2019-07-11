@@ -268,8 +268,8 @@ def cursor_changed(x):
 
 style = Style.from_dict({
     "cursor-line": "bg:#999999 nounderline",
-    "current-line-number": "bg:#999999 fg:#DDDDDD",
-    "file-viewer": "bg:#1c1c1c"
+    "line-number": "bg:#222222",
+    "current-line-number": "bg:#999999 fg:#DDDDDD bold",
     "file-viewer": "bg:#1c1c1c",
     "titlebar": "bg:#404040"
 })
