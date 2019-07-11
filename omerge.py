@@ -348,21 +348,19 @@ def update_output_titlebar():
     new_hotkeys.update(hotkeys)
     hotkeys = new_hotkeys
 
-    if sbuffer.document.current_line.startswith("<="):
+    if sbuffer.document.current_line.startswith("   "):
+        if '<' in hotkeys:
+            del hotkeys['<']
+            del hotkeys['>']
+    elif sbuffer.document.current_line.startswith("<="):
         hotkeys['<'] = 'pick left block'
-
-    if sbuffer.document.current_line.endswith("=>"):
+    elif sbuffer.document.current_line.endswith("=>"):
         hotkeys['>'] = 'pick right block'
 
-    if sbuffer.document.current_line.startswith("<|"):
+    elif sbuffer.document.current_line.startswith("<|"):
         hotkeys['<'] = 'unpick left block'
-
-    if sbuffer.document.current_line.endswith("|>"):
+    elif sbuffer.document.current_line.endswith("|>"):
         hotkeys['>'] = 'unpick right block'
-
-    if sbuffer.document.current_line.startswith("   "):
-        del hotkeys['<']
-        del hotkeys['>']
 
     new_text = ' OUTPUT | Keys: '
     new_text += " | ".join([key + " (" + description + ")" for (key, description) in hotkeys.items()])
