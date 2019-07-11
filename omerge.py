@@ -270,6 +270,8 @@ style = Style.from_dict({
     "cursor-line": "bg:#999999 nounderline",
     "current-line-number": "bg:#999999 fg:#DDDDDD",
     "file-viewer": "bg:#1c1c1c"
+    "file-viewer": "bg:#1c1c1c",
+    "titlebar": "bg:#404040"
 })
 
 
@@ -339,7 +341,7 @@ output_titlebar = Window(
     content=FormattedTextControl(text=''),
     height=1,
     char=' ',
-    style="bg:#555555")
+    style="class:titlebar")
 
 
 def update_output_titlebar():
@@ -677,8 +679,8 @@ root_container = HSplit([
 
     VSplit([
         HSplit([
-             Window(content=FormattedTextControl(text=' A - LOCAL - ' + local_branch), height=1, char=' ', style="bg:#555555"),
-             local_file_window,
+            Window(content=FormattedTextControl(text=' A - LOCAL - ' + local_branch), height=1, char=' ', style="class:titlebar"),
+            local_file_window,
         ]),
 
         HSplit([
@@ -688,8 +690,8 @@ root_container = HSplit([
 
 
         HSplit([
-         Window(content=FormattedTextControl(text=' B - REMOTE - ' + remote_branch), height=1, char=' ', style="bg:#555555"),
-         remote_file_window,
+            Window(content=FormattedTextControl(text=' B - REMOTE - ' + remote_branch), height=1, char=' ', style="class:titlebar"),
+            remote_file_window,
         ]),
     ], height=Dimension(weight=1)),
 
