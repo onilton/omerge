@@ -416,10 +416,6 @@ def save_and_exit_(event):
     event.app.exit()
 
 
-def change_char(s, p, r):
-    return s[:p]+r+s[p+1:]
-
-
 #@splitkb.add('down')
 def down_(event):
     """
