@@ -268,7 +268,8 @@ def cursor_changed(x):
 
 style = Style.from_dict({
     "cursor-line": "bg:#999999 nounderline",
-    "current-line-number": "bg:#999999 fg:#DDDDDD"
+    "current-line-number": "bg:#999999 fg:#DDDDDD",
+    "file-viewer": "bg:#1c1c1c"
 })
 
 
@@ -288,6 +289,7 @@ wspliter = Window(
 
 local_file_window = Window(
     content=local_file_buffer_control,
+    style="class:file-viewer",
     ignore_content_height=True,
     cursorline=True,
     dont_extend_height=True,
@@ -300,6 +302,7 @@ remote_file_buffer_control = BufferControl(
     input_processors=[AddStyleToDiff("bg:#222222")])
 remote_file_window = Window(
     content=remote_file_buffer_control,
+    style="class:file-viewer",
     ignore_content_height=True,
     cursorline=True,
     dont_extend_height=True,
@@ -313,6 +316,7 @@ output_buffer_control = BufferControl(
     input_processors=[AddStyleToDiff("bg:#222222")])
 output_window = Window(
     content=output_buffer_control,
+    style="class:file-viewer",
     ignore_content_height=True,
     cursorline=True,
     dont_extend_height=True,
