@@ -20,7 +20,7 @@ sudo wget 'https://github.com/onilton/omerge/releases/download/v0.0.1/omerge' -O
 
 ```
 git config --global merge.tool omerge
-git config --global mergetool.omerge.cmd '/my/path/to/omerge.py "$BASE" "$LOCAL" "$REMOTE" "$MERGED"'
+git config --global mergetool.omerge.cmd 'omerge "$BASE" "$LOCAL" "$REMOTE" "$MERGED"'
 ```
 
 
