@@ -40,4 +40,5 @@ git config --global difftool.prompt false
 * Walk around code not only conflicts
 * Do not display `--------` for missing lines, instead dynamicaly move the cursor
 * Display error when saving and not all conflicts were resolved
+* Add vim mode to output editor
 * Reduce single binary size
