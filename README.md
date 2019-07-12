@@ -42,3 +42,9 @@ git config --global difftool.prompt false
 * Display error when saving and not all conflicts were resolved
 * Add vim mode to output editor
 * Reduce single binary size
+* Add contributing.MD
+
+### Special Thanks
+ 
+* [@jonathanslenders](https://github.com/jonathanslenders) for the amazing work on [python-prompt-toolkit](https://github.com/prompt-toolkit/python-prompt-toolkit/)
+* [@dbrevesf](https://github.com/dbrevesf) for the help and inspiration
