@@ -10,7 +10,7 @@ Because what we had was not enough. :P (I need to improve this.)
 
 The easiest way is to get the single binary (available in releases page). 
 
-Install with a single command:
+#### Install with a single command:
 
 ```
 sudo wget 'https://github.com/onilton/omerge/releases/download/v0.0.1/omerge' -O /usr/local/bin/omerge
