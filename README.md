@@ -13,7 +13,7 @@ The easiest way is to get the single binary (available in releases page).
 #### Install with a single command:
 
 ```
-sudo wget 'https://github.com/onilton/omerge/releases/download/v0.0.1/omerge' -O /usr/local/bin/omerge
+sudo wget 'https://github.com/onilton/omerge/releases/download/v0.0.1/omerge' -O /usr/local/bin/omerge ; sudo chmod +x  /usr/local/bin/omerge
 ```
 
 #### Configuring as the git mergetool
